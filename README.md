@@ -41,10 +41,10 @@ bundle install
 
 3. **Defining a State Machine:**
 
-   Use `mod_machine_for` to define a state machine for a specific field.
+   Use `state_machine_for` to define a state machine for a specific field.
 
    ```ruby
-   mod_machine_for('Status', %w[Pending Active Approved Denied Archived])
+   state_machine_for('Status', %w[Pending Active Approved Denied Archived])
    ```
 
 4. **Defining Scopes:**
@@ -99,7 +99,7 @@ applicant.active? # => true
    class Applicant < ApplicationRecord
      include ModularStateMachine
 
-     mod_machine_for('Status', %w[Pending Active Approved Denied Archived])
+     state_machine_for('Status', %w[Pending Active Approved Denied Archived])
      scope :pending, -> { where(status: Status::Pending) }
      # ... other scopes
    end
