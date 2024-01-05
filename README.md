@@ -1,39 +1,127 @@
+
 # ModularStateMachine
 
-TODO: Delete this and the text below, and describe your gem
-
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/state_machine`. To experiment with that code, run `bin/console` for an interactive prompt.
+The `ModularStateMachine` is a Ruby module designed to integrate state machine behavior into ActiveRecord models. It's highly flexible and can be used to manage various states within your Rails application.
 
 ## Installation
 
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
+Include the `ModularStateMachine` module in your Gemfile:
 
-Install the gem and add to the application's Gemfile by executing:
+```ruby
+gem 'modular_state_machine'
+```
 
-    $ bundle add UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG
+Run the bundle command to install it:
 
-If bundler is not being used to manage dependencies, install the gem by executing:
-
-    $ gem install UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG
+```bash
+bundle install
+```
 
 ## Usage
 
-TODO: Write usage instructions here
+### Basic Usage
 
-## Development
+1. **Including the Module:**
 
-After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+   Include `ModularStateMachine` in your ActiveRecord model.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+   ```ruby
+   class Applicant < ApplicationRecord
+     include ModularStateMachine
+   end
+   ```
 
-## Contributing
+2. **Defining a State Machine:**
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/state_machine. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/[USERNAME]/state_machine/blob/master/CODE_OF_CONDUCT.md).
+   Use `mod_machine_for` to define a state machine for a specific field.
 
-## License
+   ```ruby
+   mod_machine_for('Status', %w[Pending Active Approved Denied Archived])
+   ```
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+3. **Defining Scopes:**
 
-## Code of Conduct
+   Define scopes for each state for easy querying.
 
-Everyone interacting in the StateMachine project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/state_machine/blob/master/CODE_OF_CONDUCT.md).
+   ```ruby
+   scope :pending, -> { where(status: Status::Pending) }
+   ```
+
+### Advanced Usage
+
+1. **Multiple State Machines:**
+
+   You can define multiple state machines for different fields in the same model.
+
+   ```ruby
+   class ExamClass
+     include ModularStateMachine
+     attr_accessor :category
+     state_machine_for('Category', ['PeerReviewed', 'NonPeerReviewed', 'CaseStudy', 'Flyies'])
+   end
+   ```
+
+2. **Integer Fields for States:**
+
+   To use integer fields for states, add an integer column to your model and map states to integers.
+
+   ```ruby
+   add_column :applicants, :status, :integer, default: 0
+   ```
+
+   Then, use a hash to define the mapping in `mod_machine_for`.
+
+   ```ruby
+   mod_machine_for('Status', { pending: 0, active: 1, approved: 2, denied: 3, archived: 4 })
+   ```
+
+### Checking States
+
+To check the state of an object, use the generated query methods.
+
+```ruby
+a = Applicant.create(status: Status::Pending)
+a.pending? # => true
+```
+
+## Examples
+
+1. **Applicant Model with State Machine:**
+
+   ```ruby
+   class Applicant < ApplicationRecord
+     include ModularStateMachine
+
+     mod_machine_for('Status', %w[Pending Active Approved Denied Archived])
+     scope :pending, -> { where(status: Status::Pending) }
+     # ... other scopes
+   end
+   ```
+
+   Usage:
+
+   ```ruby
+   applicant = Applicant.new
+   applicant.status = Status::Pending
+   applicant.pending? # => true
+   ```
+
+2. **Exam Class with Multiple State Machines:**
+
+   ```ruby
+   class ExamClass
+     include ModularStateMachine
+     attr_accessor :category
+
+     state_machine_for('Category', ['PeerReviewed', 'NonPeerReviewed', 'CaseStudy', 'Flyies'])
+     # ... additional configurations
+   end
+   ```
+
+   Usage:
+
+   ```ruby
+   exam = ExamClass.new
+   exam.category = 'PeerReviewed'
+   exam.category_peer_reviewed? # => true
+   ```
