@@ -115,7 +115,7 @@ applicant.active? # => true
    applicant.denied? #=> true
    ```
 
-2. **Exam Ruby Class with Multiple State Machines:**
+2. **Exam Ruby Class with a State Machines:**
 
    ```ruby
    class ExamClass
