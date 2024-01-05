@@ -134,3 +134,6 @@ applicant.active? # => true
    exam.category = 'PeerReviewed'
    exam.peer_reviewed? # => true
    ```
+   
+## Contact
+   In case you will have any query reach out to me on `azan.butt.dev@gmail.com`
