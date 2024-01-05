@@ -122,7 +122,7 @@ applicant.active? # => true
      include ModularStateMachine
      attr_accessor :category
 
-     state_machine_for('Category', ['PeerReviewed', 'NonPeerReviewed', 'CaseStudy', 'Flyies'])
+     state_machine_for('Category', ['PeerReviewed', 'NonPeerReviewed', 'CaseStudy'])
      # ... additional configurations
    end
    ```
