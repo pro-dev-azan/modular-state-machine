@@ -21,7 +21,15 @@ bundle install
 
 ### Basic Usage
 
-1. **Including the Module:**
+1. **Integer Fields for States:**
+
+   To use integer fields for states, add an integer column to your model and map states to integers.
+
+   ```ruby
+   add_column :applicants, :status, :integer, default: 0
+   ```
+
+2. **Including the Module:**
 
    Include `ModularStateMachine` in your ActiveRecord model.
 
@@ -31,7 +39,7 @@ bundle install
    end
    ```
 
-2. **Defining a State Machine:**
+3. **Defining a State Machine:**
 
    Use `mod_machine_for` to define a state machine for a specific field.
 
@@ -39,13 +47,22 @@ bundle install
    mod_machine_for('Status', %w[Pending Active Approved Denied Archived])
    ```
 
-3. **Defining Scopes:**
+4. **Defining Scopes:**
 
    Define scopes for each state for easy querying.
 
    ```ruby
    scope :pending, -> { where(status: Status::Pending) }
    ```
+
+### Checking States
+
+To check the state of an object, use the generated query methods.
+
+```ruby
+applicant = Applicant.create(status: Status::Active)
+applicant.active? # => true
+```   
 
 ### Advanced Usage
 
@@ -54,35 +71,25 @@ bundle install
    You can define multiple state machines for different fields in the same model.
 
    ```ruby
-   class ExamClass
+   class User < ApplicationRecord
      include ModularStateMachine
-     attr_accessor :category
-     state_machine_for('Category', ['PeerReviewed', 'NonPeerReviewed', 'CaseStudy', 'Flyies'])
+
+     state_machine_for('Status', %w[Pending Active Approved Denied Archived])
+     state_machine_for('Role', %w[Admin Buyer Seller])
+   
+     scope :pending, -> { where(status: Status::Pending) }    
+     # ... other scopes
    end
    ```
 
-2. **Integer Fields for States:**
-
-   To use integer fields for states, add an integer column to your model and map states to integers.
+   Usage:
 
    ```ruby
-   add_column :applicants, :status, :integer, default: 0
+   applicant = Applicant.last
+   applicant.pending? # => true
+   applicant.admin? # => true
+   applicant.buyer? #=> false
    ```
-
-   Then, use a hash to define the mapping in `mod_machine_for`.
-
-   ```ruby
-   mod_machine_for('Status', { pending: 0, active: 1, approved: 2, denied: 3, archived: 4 })
-   ```
-
-### Checking States
-
-To check the state of an object, use the generated query methods.
-
-```ruby
-a = Applicant.create(status: Status::Pending)
-a.pending? # => true
-```
 
 ## Examples
 
@@ -101,12 +108,14 @@ a.pending? # => true
    Usage:
 
    ```ruby
-   applicant = Applicant.new
-   applicant.status = Status::Pending
+   applicant = Applicant.new(status: Status::Pending)
    applicant.pending? # => true
+   applicant.status = Status::Denied
+   applicant.pending? # => false
+   applicant.denied? #=> true
    ```
 
-2. **Exam Class with Multiple State Machines:**
+2. **Exam Ruby Class with Multiple State Machines:**
 
    ```ruby
    class ExamClass
