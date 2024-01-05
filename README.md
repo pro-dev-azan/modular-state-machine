@@ -60,7 +60,7 @@ bundle install
 To check the state of an object, use the generated query methods.
 
 ```ruby
-applicant = Applicant.create(status: Status::Active)
+applicant = Applicant.create(status: Applicant::Status::Active)
 applicant.active? # => true
 ```   
 
