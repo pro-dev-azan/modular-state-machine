@@ -137,3 +137,4 @@ applicant.active? # => true
    
 ## Contact
    In case you will have any query reach out to me on `azan.butt.dev@gmail.com`
+   Linkedin: `https://www.linkedin.com/in/azandev/`
