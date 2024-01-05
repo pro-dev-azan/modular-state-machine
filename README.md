@@ -132,5 +132,5 @@ applicant.active? # => true
    ```ruby
    exam = ExamClass.new
    exam.category = 'PeerReviewed'
-   exam.category_peer_reviewed? # => true
+   exam.peer_reviewed? # => true
    ```
