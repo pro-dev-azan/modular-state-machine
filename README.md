@@ -108,7 +108,7 @@ applicant.active? # => true
    Usage:
 
    ```ruby
-   applicant = Applicant.new(status: Status::Pending)
+   applicant = Applicant.new(status: Applicant::Status::Pending)
    applicant.pending? # => true
    applicant.status = Applicant::Status::Denied
    applicant.pending? # => false
